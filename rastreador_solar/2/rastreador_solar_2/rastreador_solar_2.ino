@@ -56,18 +56,20 @@ void loop()
   int dhoriz = avl - avr;// check the diffirence og left and rigt
   
   
-  Serial.print(avt);
-  Serial.print(" ");
-  Serial.print(avd);
-  Serial.print(" ");
-  Serial.print(avl);
-  Serial.print(" ");
-  Serial.print(avr);
-  Serial.print("   ");
-  Serial.print(dtime);
-  Serial.print("   ");
-  Serial.print(tol);
-  Serial.println(" ");
+  
+  Serial.print("avt: ");
+  Serial.println(avt);
+  Serial.print("avd: ");
+  Serial.println(avd);
+   Serial.print("avl: ");
+  Serial.println(avl);
+  Serial.print("avr:   ");
+  Serial.println(avr);
+ // Serial.print(" dtime:  ");
+ // Serial.println(dtime);
+  //Serial.print(" tol:  ");
+ // Serial.print(tol);
+  Serial.println("--------------- ");
   
     
   if (-1*tol > dvert || dvert > tol) // check if the diffirence is in the tolerance else change vertical angle
@@ -116,5 +118,6 @@ void loop()
   horizontal.write(servoh);
   }
    delay(dtime);
+   delay(3000);
 
 }
