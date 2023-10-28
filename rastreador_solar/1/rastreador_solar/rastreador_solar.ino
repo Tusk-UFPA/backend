@@ -22,7 +22,7 @@ void setup ()
   servohori.write(0);
   servoverti.attach(9);
   servoverti.write(0);
-  delay(500);
+  delay(5000);
 }
 
 void loop()
@@ -49,7 +49,7 @@ void loop()
   Serial.print("avgright: ");
   Serial.println(avgright);
 
-  delay(1000);
+  delay(100);
 
   if (avgtop < avgbot)
   {
@@ -96,5 +96,5 @@ void loop()
   {
     servohori.write(servoh);
   }
-  delay(50);
+  delay(100);
 }

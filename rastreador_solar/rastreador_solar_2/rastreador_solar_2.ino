@@ -32,7 +32,7 @@ void setup()
   vertical.attach(10);
   horizontal.write(180);
   vertical.write(45);
-  delay(3000);
+delay(3000);
 }
 
 void loop() 
