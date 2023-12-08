@@ -6,7 +6,7 @@ import datetime
 from datetime import timedelta
 from timezonefinder import TimezoneFinder
 import pytz
-
+import schedule
 
 latitude = -1.4739214821232673
 longitude = -48.451553336970896
@@ -132,30 +132,16 @@ def lerTensao():
         print("Nenhum valor lido do pino analógico.")
     
     time.sleep(0.1)
-    
     return val
 
-
-try:
-    # Move os servos para as posições iniciais
-    for angle in range(0, 46):
-        move_servo(motoHori, angle, 0, motoHori_limit_high)
-
-    for angle in range(15, 141):
-        move_servo(motoVerti, angle, motoVerti_limit_low, motoVerti_limit_high)
-
-    # Leitura dos Sensores e Controle dos Servos
-    while True:
-        # Lê os valores analógicos dos sensores LDR
+#função para a placa solar
+def sola_track():
+    # Lê os valores analógicos dos sensores LDR
+    try:
         topR = ldrtopR.read() * 1000
         topL = ldrtopL.read() * 1000
         botR = ldrbotR.read() * 1000
         botL = ldrbotL.read() * 1000
-        # print(f'\n')
-        # print('rt: ',topR)
-        # print('lt: ',topL)
-        # print('rb: ',botR)
-        # print('lb: ',botL)
 
         avt = (topL + topR) / 2
         avb = (botL + botR) / 2
@@ -181,32 +167,52 @@ try:
             time.sleep(0.1)
             trackingHori(tol,avl,avr,dhori,angleMotoH,motoHoriLimitLow,motoHoriLimitHigh)
             time.sleep(0.1)  # Ajuste conforme necessário
+    except KeyboardInterrupt:
+        pass
 
-        try:
-            tensaoSola = pinTensaoSola.read()
-            tensaoEoleco = pinTensaoEoleco.read()
-        
-            if tensaoSola is not None:
-                tensaoSola = tensaoSola * 46.0
-                print(tensaoSola)
-            else:
-                print("Nenhum valor lido do pino analógico.")
-            
-            time.sleep(0.1)
+try:
+    # Move os servos para as posições iniciais
+    for angle in range(0, 46):
+        move_servo(motoHori, angle, 0, motoHori_limit_high)
 
-            if tensaoEoleco is not None:
-                tensaoEoleco = tensaoEoleco * 46.0
-                print(tensaoEoleco)
-            else:
-                print("Nenhum valor lido do pino analógico.")
-            
-            time.sleep(0.1)
-        except KeyboardInterrupt:
-            pass
-
+    for angle in range(15, 141):
+        move_servo(motoVerti, angle, motoVerti_limit_low, motoVerti_limit_high)
 except KeyboardInterrupt:
     pass
 
-finally:
-    # Certifique-se de liberar os recursos do Arduino ao finalizar
-    board.exit()
+schedule.every(5).minutes.do(sola_track)
+
+# Leitura dos Sensores e Controle dos Servos
+while True:
+    
+    try:
+        r1 = 30000
+        r2 = 7500
+        tensaoSola = pinTensaoSola.read()
+        tensaoEoleco = pinTensaoEoleco.read()
+    
+        if tensaoSola is not None:
+            tensaoSolaV = (((tensaoSola*5)/1024)/(r2/(r1+r2)))*1000
+            print(tensaoSola)
+        else:
+            print("Nenhum valor lido do pino analógico.")
+        
+        time.sleep(0.1)
+
+        if tensaoEoleco is not None:
+            tensaoEolecoV = (((tensaoEoleco*5)/1024)/(r2/(r1+r2)))*1000
+            print(tensaoEoleco)
+        else:
+            print("Nenhum valor lido do pino analógico.")
+        
+        time.sleep(0.1)
+    except KeyboardInterrupt:
+        pass
+
+    schedule.run_pending()
+    time.sleep(1)
+
+
+# finally:
+#     # Certifique-se de liberar os recursos do Arduino ao finalizar
+#     board.exit()
